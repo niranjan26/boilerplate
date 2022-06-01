@@ -1,0 +1,11 @@
+{
+    "database": {
+        "host": "127.0.0.1",
+        "password": "root",
+        "user": "root",
+        "port": "3306",
+        "dbName":"postman"
+    },
+    "host": "localhost",
+    "port": "8080"
+}
