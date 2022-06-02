@@ -3,6 +3,7 @@ module postman
 go 1.18
 
 require (
+	github.com/corsc/go-commons v1.1.3
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	gorm.io/driver/mysql v1.3.4
