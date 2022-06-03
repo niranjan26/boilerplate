@@ -20,34 +20,29 @@ func NewPostmanService(dbStorage *storage.DBStorage) *PostmanService {
 }
 
 func (p *PostmanService) SimpleDBCreate(ctx context.Context, serviceRequest *model.ServiceRequest) (*model.ServiceResponse, error) {
-	user := &entity.User{
-		Name: serviceRequest.UserName,
-		Age:  serviceRequest.Age,
-	}
+	comment := serviceRequest.NewCommentEntityFromService()
 
-	err := p.dbStorage.CreateUser(user)
+	err := p.dbStorage.SaveComment(comment)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &model.ServiceResponse{ID: user.ID}, nil
+	return &model.ServiceResponse{CommentID: comment.ID}, nil
 }
 
 func (p *PostmanService) SimpleDBSearch(ctx context.Context, serviceRequest *model.ServiceRequest) (*model.ServiceResponse, error) {
-	id, err := strconv.Atoi(serviceRequest.ID)
+	pageNo, err := strconv.Atoi(serviceRequest.Page)
 	if err != nil {
 		return nil, errors.New("invalid number")
 	}
 
-	user := &entity.User{
-		ID: uint(id),
-	}
+	comment := &entity.Comment{PostID: serviceRequest.PostID}
 
-	user, err = p.dbStorage.FindUserByID(user)
+	comments, err := p.dbStorage.GetCommentPage(comment, pageNo)
 	if err != nil {
 		return nil, err
 	}
 
-	return &model.ServiceResponse{ID: user.ID, Name: user.Name, Age: user.Age}, nil
+	return &model.ServiceResponse{PostID: comment.PostID, Comments: comments}, nil
 }

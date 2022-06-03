@@ -6,6 +6,7 @@ import (
 	"postman/internal/model"
 	"postman/internal/responsewriter"
 	"postman/internal/service"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -29,6 +30,8 @@ func (p *PostmanHandler) AddRoutes(router *mux.Router) {
 	router.HandleFunc("/helloworld", p.handler).Methods(http.MethodGet)
 	router.HandleFunc("/newuser", p.handleNewUser).Methods(http.MethodPost)
 	router.HandleFunc("/getuser/{id}", p.handleGetUser).Methods(http.MethodGet)
+	router.HandleFunc("/newcomment", p.handleNewComment).Methods(http.MethodPut)
+	router.HandleFunc("/getcomment", p.handleGetComments).Methods(http.MethodGet)
 }
 
 func (p *PostmanHandler) handler(resp http.ResponseWriter, _ *http.Request) {
@@ -70,6 +73,58 @@ func (p *PostmanHandler) handleGetUser(resp http.ResponseWriter, request *http.R
 	}
 
 	serviceResponse, err := p.postmanService.SimpleDBSearch(ctx, &model.ServiceRequest{ID: id})
+	if err != nil {
+		responsewriter.WriteFailResponse(resp, "0001", "Internal Server Error", "1", 500)
+		return
+	}
+
+	responsewriter.WriteSuccessResponse(resp, "0000", "SUCCESS", "1", serviceResponse)
+}
+
+func (p *PostmanHandler) handleNewComment(resp http.ResponseWriter, request *http.Request) {
+	resp.Header().Set(contentType, applicationJson)
+
+	ctx := request.Context()
+
+	requestModel := &model.PostmanCommentRequest{}
+
+	err := httptools.ParseRequest(request, requestModel)
+	if err != nil {
+		responsewriter.WriteFailResponse(resp, "0002", "Invalid Request", "1", 400)
+		return
+	}
+
+	serviceResponse, err := p.postmanService.SimpleDBCreate(ctx, requestModel.GetServiceRequest())
+	if err != nil {
+		responsewriter.WriteFailResponse(resp, "0001", "Internal Server Error", "1", 500)
+		return
+	}
+
+	responsewriter.WriteSuccessResponse(resp, "0000", "SUCCESS", "1", serviceResponse)
+}
+
+func (p *PostmanHandler) handleGetComments(resp http.ResponseWriter, request *http.Request) {
+	resp.Header().Set(contentType, applicationJson)
+
+	ctx := request.Context()
+
+	// params := httptools.GetMuxValue(ctx)
+	page := request.URL.Query().Get("page")
+	// page := params["page"]
+	// postID := params["postID"]
+	postID := request.URL.Query().Get("postID")
+	if page == "" || postID == "" {
+		responsewriter.WriteFailResponse(resp, "0002", "Invalid Request", "1", 400)
+		return
+	}
+
+	postIDInt, err := strconv.Atoi(postID)
+	if err != nil {
+		responsewriter.WriteFailResponse(resp, "0002", "Invalid Request", "1", 400)
+		return
+	}
+
+	serviceResponse, err := p.postmanService.SimpleDBSearch(ctx, &model.ServiceRequest{Page: page, PostID: uint(postIDInt)})
 	if err != nil {
 		responsewriter.WriteFailResponse(resp, "0001", "Internal Server Error", "1", 500)
 		return

@@ -59,3 +59,22 @@ func (db *DBStorage) FindUserByID(user *entity.User) (*entity.User, error) {
 
 	return user, nil
 }
+
+func (db *DBStorage) SaveComment(comment *entity.Comment) error {
+	result := db.GetConn().Create(comment)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (db *DBStorage) GetCommentPage(comment *entity.Comment, page int) ([]*entity.Comment, error) {
+	var comments []*entity.Comment
+	result := db.GetConn().Where(comment).Limit(10).Offset(page).Find(&comments)
+	if result.Error != nil {
+		return nil, errors.New("error occured while fetch err")
+	}
+
+	return comments, nil
+}
