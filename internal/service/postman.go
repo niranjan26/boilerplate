@@ -23,7 +23,6 @@ func (p *PostmanService) SimpleDBCreate(ctx context.Context, serviceRequest *mod
 	comment := serviceRequest.NewCommentEntityFromService()
 
 	err := p.dbStorage.SaveComment(comment)
-
 	if err != nil {
 		return nil, err
 	}
@@ -45,4 +44,26 @@ func (p *PostmanService) SimpleDBSearch(ctx context.Context, serviceRequest *mod
 	}
 
 	return &model.ServiceResponse{PostID: comment.PostID, Comments: comments}, nil
+}
+
+func (p *PostmanService) SimpleDBUpdate(ctx context.Context, serviceRequest *model.ServiceRequest) (*model.ServiceResponse, error) {
+	comment := &entity.Comment{ID: serviceRequest.CommentID, Comment: serviceRequest.Comment}
+
+	err := p.dbStorage.UpdateComment(comment)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.ServiceResponse{CommentID: comment.ID, Comment: comment.Comment, PostID: comment.PostID, ParentID: comment.ParentID}, nil
+}
+
+func (p *PostmanService) SimpleDBDelete(ctx context.Context, serviceRequest *model.ServiceRequest) (*model.ServiceResponse, error) {
+	comment := &entity.Comment{ID: serviceRequest.CommentID}
+
+	err := p.dbStorage.DeleteComment(comment)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.ServiceResponse{}, nil
 }

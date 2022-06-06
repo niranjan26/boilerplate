@@ -13,11 +13,12 @@ type PostmanRequest struct {
 }
 
 type PostmanCommentRequest struct {
-	PostID   uint   `json:"postID"`
-	UserID   uint   `json:"userID"`
-	ParentID uint   `json:"parentID"`
-	Comment  string `json:"comment"`
-	Page     uint   `json:"page"`
+	CommentID uint   `json:"commentID,omitempty"`
+	PostID    uint   `json:"postID"`
+	UserID    uint   `json:"userID"`
+	ParentID  uint   `json:"parentID"`
+	Comment   string `json:"comment"`
+	Page      uint   `json:"page"`
 }
 
 func (p *PostmanCommentRequest) Validate() error {

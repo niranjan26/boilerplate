@@ -15,15 +15,15 @@ type ServiceRequest struct {
 }
 
 type ServiceResponse struct {
-	ID        uint              `json:"ID"`
-	Name      string            `json:"name"`
-	Age       float64           `json:"age"`
-	CommentID uint              `json:"commentID"`
-	PostID    uint              `json:"postID"`
-	UserID    uint              `json:"userID"`
-	ParentID  uint              `json:"parentID"`
-	Comment   string            `json:"comment"`
-	Comments  []*entity.Comment `json:"comments"`
+	ID        uint              `json:"ID,omitempty"`
+	Name      string            `json:"name,omitempty"`
+	Age       float64           `json:"age,omitempty"`
+	CommentID uint              `json:"commentID,omitempty"`
+	PostID    uint              `json:"postID,omitempty"`
+	UserID    uint              `json:"userID,omitempty"`
+	ParentID  uint              `json:"parentID,omitempty"`
+	Comment   string            `json:"comment,omitempty"`
+	Comments  []*entity.Comment `json:"comments,omitempty"`
 }
 
 func (s *ServiceRequest) NewCommentEntityFromService() *entity.Comment {

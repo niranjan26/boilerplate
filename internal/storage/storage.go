@@ -78,3 +78,31 @@ func (db *DBStorage) GetCommentPage(comment *entity.Comment, page int) ([]*entit
 
 	return comments, nil
 }
+
+func (db *DBStorage) UpdateComment(comment *entity.Comment) error {
+	result := db.GetConn().Model(&comment).Update("comment", comment.Comment)
+	if result.Error != nil {
+		return errors.New("error occured while update")
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("no rows affected")
+	}
+
+	return nil
+}
+
+func (db *DBStorage) DeleteComment(comment *entity.Comment) error {
+	result := db.GetConn().Delete(&comment)
+	if result.Error != nil {
+		return errors.New("error occured while delete")
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("no rows affected")
+	}
+
+	db.GetConn().Unscoped().Delete(&comment)
+
+	return nil
+}
